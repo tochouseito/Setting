@@ -8,6 +8,8 @@ public class GameManagerScript : MonoBehaviour
     public GameObject playerPrefab;
     int[,] map;
     GameObject[,] field;
+    GameObject obj;
+    
     
     // Start is called before the first frame update
     void Start()
@@ -18,7 +20,10 @@ public class GameManagerScript : MonoBehaviour
         {0,0,1,0,0 },
         {0,0,0,0,0 },
         };
-
+        field = new GameObject[
+            map.GetLength(0),
+            map.GetLength(1)
+            ];
         string debugText = "";
         for(int y = 0; y < map.GetLength(0); y++)
         {
@@ -26,8 +31,8 @@ public class GameManagerScript : MonoBehaviour
             {
                 if (map[y,x] == 1)
                 {
-                    GameObject instance = Instantiate(playerPrefab,
-                        new Vector3(x,y,0),
+                    field[y,x]= Instantiate(playerPrefab,
+                        new Vector3(x,map.GetLength(0)-y,0),
                         Quaternion.identity);
                 }
                 debugText += map[y, x].ToString() + ",";
@@ -40,17 +45,16 @@ public class GameManagerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-    }
-    /*
+   
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            int playerIndex =GetPlayerIndex();
+            Vector2Int playerIndex =GetPlayerIndex();
             MoveNumber(1, playerIndex, playerIndex + 1);
             PrintArray();
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            int playerIndex = GetPlayerIndex();
+            Vector2Int playerIndex = GetPlayerIndex();
             MoveNumber(1, playerIndex, playerIndex - 1);
             PrintArray();
 
@@ -68,24 +72,25 @@ public class GameManagerScript : MonoBehaviour
         }
         Debug.Log(debugText);
     }
-    int GetPlayerIndex()
+    Vector2Int GetPlayerIndex()
     {
-        for (int y = 0; y < map.GetLength(0); y++)
+       
+        for (int y = 0; y < field.GetLength(0); y++)
         {
-            for (int x = 0; x < map.GetLength(1); x++)
+            for (int x = 0; x < field.GetLength(1); x++)
             {
-                if (map[y,x] == 1)
+                if (field[y, x] == null)
                 {
-                    return ;
+                    continue;
+                }
+                if (obj.tag=="Player")
+                {
+                    return new Vector2Int(x,y);
                 }
             }
         }
-        if (map[i] == 1)
-            {
-                return i;
-            }
-        }
-        return -1;
+
+        return new Vector2Int(-1, -1);
     }
    bool MoveNumber(int number,int moveFrom,int moveTo)
     {
@@ -104,5 +109,5 @@ public class GameManagerScript : MonoBehaviour
         map[moveFrom] = 0;
         return true;
     }
-        */
+        
 }
