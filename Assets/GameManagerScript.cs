@@ -54,7 +54,7 @@ public class GameManagerScript : MonoBehaviour
                     GameObject Goals = Instantiate(goalsPrefab,
                        new Vector3(x, map.GetLength(0) - y, 0.5f),
                        Quaternion.identity);
-                    field[y, x] = Goals;
+                    //field[y, x] = Goals;
                 }
                 //GameObject ClearText = Instantiate(clearText,
                    //    new Vector3(x, map.GetLength(0) - y, 0),
