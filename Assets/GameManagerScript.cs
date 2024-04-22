@@ -52,7 +52,7 @@ public class GameManagerScript : MonoBehaviour
                 if (map[y, x] == 3)
                 {
                     GameObject Goals = Instantiate(goalsPrefab,
-                       new Vector3(x, map.GetLength(0) - y, 0),
+                       new Vector3(x, map.GetLength(0) - y, 0.5f),
                        Quaternion.identity);
                     field[y, x] = Goals;
                 }
