@@ -7,26 +7,30 @@ public class GameManagerScript : MonoBehaviour
 {
     public GameObject playerPrefab;
     public GameObject boxPrefab;
+    public GameObject goalsPrefab;
+    public GameObject clearText;
     int[,] map;
     GameObject[,] field;
     GameObject obj;
-    
-    
-    
+
+    string debugText = "";
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
         map = new int[,] {
-        {0,0,2,0,0 },
-        {0,0,1,0,2 },
-        {0,2,0,0,0 },
+        {0,3,2,0,0,0,0},
+        {0,0,1,3,2 ,0,0},
+        {3,2,0,0,0 ,0,0},
+        {3,2,0,0,0 ,0,0},
+        {3,2,0,0,0 ,0,0}
         };
         field = new GameObject[
             map.GetLength(0),
             map.GetLength(1)
             ];
-        //string debugText = "";
+        
         for(int y = 0; y < map.GetLength(0); y++)
         {
             for(int x = 0; x < map.GetLength(1); x++)
@@ -45,7 +49,17 @@ public class GameManagerScript : MonoBehaviour
                        Quaternion.identity);
                     field[y, x] = Box;
                 }
-               // debugText += map[y, x].ToString() + ",";
+                if (map[y, x] == 3)
+                {
+                    GameObject Goals = Instantiate(goalsPrefab,
+                       new Vector3(x, map.GetLength(0) - y, 0),
+                       Quaternion.identity);
+                    field[y, x] = Goals;
+                }
+                //GameObject ClearText = Instantiate(clearText,
+                   //    new Vector3(x, map.GetLength(0) - y, 0),
+                    //   Quaternion.identity);
+                // debugText += map[y, x].ToString() + ",";
             }
             //debugText += "\n";
         }
@@ -75,6 +89,11 @@ public class GameManagerScript : MonoBehaviour
         {
             Vector2Int playerIndex = GetPlayerIndex();
             MoveNumber(tag, playerIndex, playerIndex + new Vector2Int(0, 1));
+        }
+        if (IsCleard())
+        {
+
+            clearText.SetActive(true);
         }
     }
     
@@ -116,6 +135,38 @@ public class GameManagerScript : MonoBehaviour
         field[moveFrom.y, moveFrom.x] = null;
         return true;
         
+    }
+    bool IsCleard()
+    {
+        // Vector2IntŒ^‚Ì‰Â•Ï’·”z—ñ‚Ìì¬
+        List<Vector2Int>goals=new List<Vector2Int>();
+
+        for(int y = 0; y < map.GetLength(0); y++)
+        {
+            for(int x = 0; x < map.GetLength(1); x++)
+            {
+                // Ši”[êŠ‚©”Û‚©‚ð”»’f
+                if (map[y, x] == 3)
+                {
+                    // Ši”[êŠ‚ÌƒCƒ“ƒfƒbƒNƒX‚ðT‚¦‚Ä‚¨‚­
+                    goals.Add(new Vector2Int(x,y));
+                }
+            }
+        }
+        for(int i = 0; i < goals.Count; i++)
+        {
+            GameObject f= field[goals[i].y, goals[i].x];
+            if (f == null || f.tag != "Box")
+            {
+                // ˆê‚Â‚Å‚à” ‚ª‚È‚©‚Á‚½‚çðŒ–¢’B¬
+                return false;
+            }
+        }
+        // ðŒ–¢’B¬‚Å‚È‚¯‚ê‚ÎðŒ’B¬
+        
+        debugText = "Clear!";
+        Debug.Log(debugText);
+        return true;
     }
         
 }
