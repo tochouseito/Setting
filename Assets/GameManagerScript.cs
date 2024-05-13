@@ -134,7 +134,7 @@ public class GameManagerScript : MonoBehaviour
         //field[moveFrom.y, moveFrom.x].transform.position =
         //new Vector3(moveTo.x, field.GetLength(0) - moveTo.y, 0);
         Vector3 moveToPosition = new Vector3(
-            moveTo.x-map.GetLength(1)/2, field.GetLength(0)/2 - moveTo.y, 0
+            moveTo.x-field.GetLength(1)/2, field.GetLength(0)/2 - moveTo.y, 0
             );
         field[moveFrom.y, moveFrom.x].GetComponent<Move>().MoveTo(moveToPosition);
         field[moveTo.y, moveTo.x] = field[moveFrom.y, moveFrom.x];
