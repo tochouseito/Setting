@@ -18,6 +18,7 @@ public class GameManagerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Screen.SetResolution(1280, 720, false);
 
         map = new int[,] {
         {0,3,2,0,0,0,0},
@@ -38,21 +39,21 @@ public class GameManagerScript : MonoBehaviour
                 if (map[y,x] == 1)
                 {
                     GameObject player = Instantiate(playerPrefab,
-                        new Vector3(x, map.GetLength(0) - y, 0),
+                        new Vector3(x - (map.GetLength(1) / 2), (map.GetLength(0)/2)-y, 0),
                         Quaternion.identity);
                     field[y, x] = player;
 
                 }
                 if (map[y, x] == 2){
                     GameObject Box = Instantiate(boxPrefab,
-                       new Vector3(x, map.GetLength(0) - y, 0),
+                       new Vector3(x - (map.GetLength(1) / 2), map.GetLength(0)/2 - y, 0),
                        Quaternion.identity);
                     field[y, x] = Box;
                 }
                 if (map[y, x] == 3)
                 {
                     GameObject Goals = Instantiate(goalsPrefab,
-                       new Vector3(x, map.GetLength(0) - y, 0.5f),
+                       new Vector3(x - (map.GetLength(1) / 2), map.GetLength(0)/2 - y, 0.01f),
                        Quaternion.identity);
                     //field[y, x] = Goals;
                 }
@@ -119,6 +120,7 @@ public class GameManagerScript : MonoBehaviour
     }
    bool MoveNumber(string tag,Vector2Int moveFrom,Vector2Int moveTo)
     {
+        
         if (moveTo.y < 0 || moveTo.y >= field.GetLength(0)) { return false;}
         if (moveTo.x < 0 || moveTo.x >= field.GetLength(1)) { return false; }
         if (field[moveTo.y,moveTo.x] != null && field[moveTo.y,moveTo.x].tag=="Box")
@@ -127,10 +129,14 @@ public class GameManagerScript : MonoBehaviour
             bool success = MoveNumber(tag, moveTo, moveTo + velocity);
             if (!success) { return false; }
         }
-
+        
         // GameObjectの座標（position)を移動させてからインデックスの入れ替え
-        field[moveFrom.y, moveFrom.x].transform.position =
-            new Vector3(moveTo.x, field.GetLength(0) - moveTo.y, 0);
+        //field[moveFrom.y, moveFrom.x].transform.position =
+        //new Vector3(moveTo.x, field.GetLength(0) - moveTo.y, 0);
+        Vector3 moveToPosition = new Vector3(
+            moveTo.x-map.GetLength(1)/2, field.GetLength(0)/2 - moveTo.y, 0
+            );
+        field[moveFrom.y, moveFrom.x].GetComponent<Move>().MoveTo(moveToPosition);
         field[moveTo.y, moveTo.x] = field[moveFrom.y, moveFrom.x];
         field[moveFrom.y, moveFrom.x] = null;
         return true;
