@@ -9,6 +9,7 @@ public class GameManagerScript : MonoBehaviour
     public GameObject boxPrefab;
     public GameObject goalsPrefab;
     public GameObject clearText;
+    public GameObject particlePrefab;
     int[,] map;
     GameObject[,] field;
     GameObject obj;
@@ -65,6 +66,7 @@ public class GameManagerScript : MonoBehaviour
             //debugText += "\n";
         }
         //Debug.Log(debugText);
+        
     }
 
     // Update is called once per frame
@@ -75,21 +77,46 @@ public class GameManagerScript : MonoBehaviour
         {
             Vector2Int playerIndex =GetPlayerIndex();
             MoveNumber(tag, playerIndex, playerIndex+new Vector2Int(1,0));
+            for (int i = 0; i < 8; ++i)
+            {
+                GameObject particle = Instantiate(particlePrefab,
+                       new  Vector3(playerIndex.x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - playerIndex.y, 0),
+                       Quaternion.identity);
+            }
+
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             Vector2Int playerIndex = GetPlayerIndex();
             MoveNumber(tag, playerIndex, playerIndex+new Vector2Int(-1,0));
+            for (int i = 0; i < 8; ++i)
+            {
+                GameObject particle = Instantiate(particlePrefab,
+                       new Vector3(playerIndex.x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - playerIndex.y, 0),
+                       Quaternion.identity);
+            }
         }
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             Vector2Int playerIndex = GetPlayerIndex();
             MoveNumber(tag, playerIndex, playerIndex + new Vector2Int(0, -1));
+            for (int i = 0; i < 8; ++i)
+            {
+                GameObject particle = Instantiate(particlePrefab,
+                       new Vector3(playerIndex.x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - playerIndex.y, 0),
+                       Quaternion.identity);
+            }
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             Vector2Int playerIndex = GetPlayerIndex();
             MoveNumber(tag, playerIndex, playerIndex + new Vector2Int(0, 1));
+            for (int i = 0; i < 8; ++i)
+            {
+                GameObject particle = Instantiate(particlePrefab,
+                       new Vector3(playerIndex.x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - playerIndex.y, 0),
+                       Quaternion.identity);
+            }
         }
         if (IsCleard())
         {

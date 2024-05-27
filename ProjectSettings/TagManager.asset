@@ -7,6 +7,7 @@ TagManager:
   - Box
   - Goals
   - ClearText
+  - Particle
   layers:
   - Default
   - TransparentFX

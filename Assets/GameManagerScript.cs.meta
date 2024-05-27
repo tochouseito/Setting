@@ -7,7 +7,8 @@ MonoImporter:
   - playerPrefab: {fileID: 695492395882869216, guid: ec5034e3973f3824cae39433e15d3ba7, type: 3}
   - boxPrefab: {fileID: 2778979941897818143, guid: 8c1474febe9f72949bab5fd8fefb85b0, type: 3}
   - goalsPrefab: {fileID: 2367475362187718917, guid: e376224524ac10f40b75a68b619fc2e8, type: 3}
-  - clearText: {fileID: 5331746389245058673, guid: 215c3b9753f74674d93830a1cabc9984, type: 3}
+  - clearText: {instanceID: 0}
+  - particlePrefab: {fileID: 179375399296062662, guid: d7a92656346ad324d98157ab53b2e7ca, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
