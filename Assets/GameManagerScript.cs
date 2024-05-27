@@ -10,11 +10,16 @@ public class GameManagerScript : MonoBehaviour
     public GameObject boxPrefab;
     public GameObject goalsPrefab;
     public GameObject clearText;
+    public GameObject UIText;
+    public GameObject StartText;
+    //public GameObject TitleText;
+    public GameObject Title;
     public GameObject particlePrefab;
     public GameObject wallPrefab;
     public GameObject player = null;
     public Quaternion targetRotation = Quaternion.identity;
     public Stack<GameAction> actionStack = new Stack<GameAction>();
+    
     int stock = 0;
     //public Stack<GameAction> boxStack = new Stack<GameAction>();
     public enum ActionType
@@ -36,143 +41,168 @@ public class GameManagerScript : MonoBehaviour
     public float rotationSpeed = 180.0f;
     public Vector3 before ;
     string debugText = "";
-    
+    enum Scene
+    {
+        Title,
+        Game,
+        Clear
+    }
+    int scene = 0;
     // Start is called before the first frame update
     void Start()
     {
-        Screen.SetResolution(1920, 1080, false);
-
-        map = new int[,] {
+        Screen.SetResolution(1280, 720, false);
+        if (scene == 0)
+        {
+            Title.SetActive(true);
+            StartText.SetActive(true);
+        }
+            
+            map = new int[,] {
         {4,4,4,4,4,4,4,4,4,4},
         {4,3,0,0,0,0,0,0,0,4},
-        {4,4,4,4,0,0,0,0,0,4},
-        {4,0,0,0,0,0,0,0,0,4},
+        {4,4,4,4,0,0,3,2,0,4},
+        {4,0,0,0,0,0,4,4,4,4},
         {4,0,2,3,2,0,0,0,0,4},
-        {4,0,0,0,1,0,0,0,0,4},
+        {4,0,2,0,1,0,0,0,0,4},
         {4,0,0,0,0,0,0,0,0,4},
-        {4,0,0,0,0,0,0,0,0,4},
-        {4,0,0,0,0,0,0,0,0,4},
+        {4,0,0,4,0,0,0,0,0,4},
+        {4,3,0,4,0,0,0,0,0,4},
         {4,4,4,4,4,4,4,4,4,4}
         };
-        field = new GameObject[
-            map.GetLength(0),
-            map.GetLength(1)
-            ];
-        
-        for(int y = 0; y < map.GetLength(0); y++)
-        {
-            for(int x = 0; x < map.GetLength(1); x++)
-            {
-                if (map[y,x] == 1)
-                {
-                   player = Instantiate(playerPrefab,
-                        new Vector3(x - (map.GetLength(1) / 2), (map.GetLength(0)/2)-y, 0),
-                        Quaternion.identity);
-                    field[y, x] = player;
+            field = new GameObject[
+                map.GetLength(0),
+                map.GetLength(1)
+                ];
 
-                }
-                if (map[y, x] == 2){
-                    GameObject Box = Instantiate(boxPrefab,
-                       new Vector3(x - (map.GetLength(1) / 2), map.GetLength(0)/2 - y, 0),
-                       Quaternion.identity);
-                    field[y, x] = Box;
-                }
-                if (map[y, x] == 3)
+            for (int y = 0; y < map.GetLength(0); y++)
+            {
+                for (int x = 0; x < map.GetLength(1); x++)
                 {
-                    GameObject Goals = Instantiate(goalsPrefab,
-                       new Vector3(x - (map.GetLength(1) / 2), map.GetLength(0)/2 - y, -0.4f),
-                       Quaternion.identity);
-                    //field[y, x] = Goals;
-                }
-                if (map[y,x]==4)
-                {
-                    GameObject Walls=Instantiate(wallPrefab,
-                        new Vector3(x-(map.GetLength(1)/2),map.GetLength(0)/2-y,0),
-                        Quaternion.identity);
-                    field[y, x] = Walls;
-                }
-                //GameObject ClearText = Instantiate(clearText,
-                   //    new Vector3(x, map.GetLength(0) - y, 0),
+                    if (map[y, x] == 1)
+                    {
+                        player = Instantiate(playerPrefab,
+                             new Vector3(x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - y, 0),
+                             Quaternion.identity);
+                        field[y, x] = player;
+
+                    }
+                    if (map[y, x] == 2)
+                    {
+                        GameObject Box = Instantiate(boxPrefab,
+                           new Vector3(x - (map.GetLength(1) / 2), map.GetLength(0) / 2 - y, 0),
+                           Quaternion.identity);
+                        field[y, x] = Box;
+                    }
+                    if (map[y, x] == 3)
+                    {
+                        GameObject Goals = Instantiate(goalsPrefab,
+                           new Vector3(x - (map.GetLength(1) / 2), map.GetLength(0) / 2 - y, -0.4f),
+                           Quaternion.identity);
+                        //field[y, x] = Goals;
+                    }
+                    if (map[y, x] == 4)
+                    {
+                        GameObject Walls = Instantiate(wallPrefab,
+                            new Vector3(x - (map.GetLength(1) / 2), map.GetLength(0) / 2 - y, 0),
+                            Quaternion.identity);
+                        field[y, x] = Walls;
+                    }
+                    //GameObject ClearText = Instantiate(clearText,
+                    //    new Vector3(x, map.GetLength(0) - y, 0),
                     //   Quaternion.identity);
-                // debugText += map[y, x].ToString() + ",";
+                    // debugText += map[y, x].ToString() + ",";
+                }
+                //debugText += "\n";
             }
-            //debugText += "\n";
-        }
-        //Debug.Log(debugText);
+            //Debug.Log(debugText);
         
     }
 
     // Update is called once per frame
     void Update()
     {
-   
-        if (Input.GetKeyDown(KeyCode.RightArrow)||Input.GetKeyDown(KeyCode.D))
+        if (scene == 0)
         {
-            stock = actionStack.Count;
-            targetRotation = Quaternion.Euler(0, 0, 0);
-            
-            Vector2Int playerIndex =GetPlayerIndex();
-            MoveNumber("Player", playerIndex, playerIndex+new Vector2Int(1,0));
-            for (int i = 0; i < 8; ++i)
+            if (Input.GetKeyDown(KeyCode.Space)){
+                scene = 1;
+                Reset();
+            }
+        }
+        else
+        {
+            UIText.SetActive(true);
+
+            if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
             {
-                GameObject particle = Instantiate(particlePrefab,
-                       new  Vector3(playerIndex.x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - playerIndex.y, 0),
-                       Quaternion.identity);
+                stock = actionStack.Count;
+                targetRotation = Quaternion.Euler(0, 0, 0);
+
+                Vector2Int playerIndex = GetPlayerIndex();
+                MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(1, 0));
+                for (int i = 0; i < 8; ++i)
+                {
+                    GameObject particle = Instantiate(particlePrefab,
+                           new Vector3(playerIndex.x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - playerIndex.y, 0),
+                           Quaternion.identity);
+                }
+
+            }
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+            {
+                stock = actionStack.Count;
+                targetRotation = Quaternion.Euler(0, 0, 180);
+                Vector2Int playerIndex = GetPlayerIndex();
+                MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(-1, 0));
+                for (int i = 0; i < 8; ++i)
+                {
+                    GameObject particle = Instantiate(particlePrefab,
+                           new Vector3(playerIndex.x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - playerIndex.y, 0),
+                           Quaternion.identity);
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+            {
+                stock = actionStack.Count;
+                targetRotation = Quaternion.Euler(0, 0, 90);
+                Vector2Int playerIndex = GetPlayerIndex();
+                MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(0, -1));
+                for (int i = 0; i < 8; ++i)
+                {
+                    GameObject particle = Instantiate(particlePrefab,
+                           new Vector3(playerIndex.x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - playerIndex.y, 0),
+                           Quaternion.identity);
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+            {
+                stock = actionStack.Count;
+                targetRotation = Quaternion.Euler(0, 0, -90);
+                Vector2Int playerIndex = GetPlayerIndex();
+                MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(0, 1));
+                for (int i = 0; i < 8; ++i)
+                {
+                    GameObject particle = Instantiate(particlePrefab,
+                           new Vector3(playerIndex.x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - playerIndex.y, 0),
+                           Quaternion.identity);
+                }
             }
 
-        }
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
-        {
-            stock = actionStack.Count;
-            targetRotation = Quaternion.Euler(0, 0, 180);
-            Vector2Int playerIndex = GetPlayerIndex();
-            MoveNumber("Player", playerIndex, playerIndex+new Vector2Int(-1,0));
-            for (int i = 0; i < 8; ++i)
+            player.transform.rotation = Quaternion.Lerp(player.transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+            if (IsCleard())
             {
-                GameObject particle = Instantiate(particlePrefab,
-                       new Vector3(playerIndex.x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - playerIndex.y, 0),
-                       Quaternion.identity);
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
-        {
-            stock = actionStack.Count;
-            targetRotation = Quaternion.Euler(0, 0, 90);
-            Vector2Int playerIndex = GetPlayerIndex();
-            MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(0, -1));
-            for (int i = 0; i < 8; ++i)
-            {
-                GameObject particle = Instantiate(particlePrefab,
-                       new Vector3(playerIndex.x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - playerIndex.y, 0),
-                       Quaternion.identity);
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
-        {
-            stock = actionStack.Count;
-            targetRotation = Quaternion.Euler(0, 0, -90);
-            Vector2Int playerIndex = GetPlayerIndex();
-            MoveNumber("Player", playerIndex, playerIndex + new Vector2Int(0, 1));
-            for (int i = 0; i < 8; ++i)
-            {
-                GameObject particle = Instantiate(particlePrefab,
-                       new Vector3(playerIndex.x - (map.GetLength(1) / 2), (map.GetLength(0) / 2) - playerIndex.y, 0),
-                       Quaternion.identity);
-            }
-        }
 
-        player.transform.rotation = Quaternion.Lerp(player.transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
-        if (IsCleard())
-        {
-
-            clearText.SetActive(true);
-        }
-        if(Input.GetKeyDown(KeyCode.R)) {
-            Reset();
-        }
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            Undo();
+                clearText.SetActive(true);
+            }
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                scene = 0;
+                Reset();
+            }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                Undo();
+            }
         }
     }
     
@@ -221,14 +251,19 @@ public class GameManagerScript : MonoBehaviour
             if (!success) { return false; }
             if (actionStack.Count == stock)
             {
-                actionStack.Push(new GameAction
-                {
-                    actionType = ActionType.MovePlayer,
-                    oldPosition = moveFrom,
-                    newPosition = moveTo,
-                    tags = tag
-                    //target = player
-                });
+                 
+               
+                    actionStack.Push(new GameAction
+                    {
+                        actionType = ActionType.MovePlayer,
+                        oldPosition = moveFrom,
+                        newPosition = moveTo,
+                        tags = tag
+                        //target = player
+                    });
+                
+                
+                
             }
             return false;
             //Vector2Int velocity = moveTo - moveFrom;
@@ -239,26 +274,32 @@ public class GameManagerScript : MonoBehaviour
         {
             if (actionStack.Count == stock)
             {
-                actionStack.Push(new GameAction
-                {
-                    actionType = ActionType.MovePlayer,
-                    oldPosition = moveFrom,
-                    newPosition = moveTo,
-                    tags = tag
-                    //target = player
-                });
+                
+                    actionStack.Push(new GameAction
+                    {
+                        actionType = ActionType.MovePlayer,
+                        oldPosition = moveFrom,
+                        newPosition = moveTo,
+                        tags = tag
+                        //target = player
+                    });
+                
+                
             }
             //return false;
         }
         // GameObjectの座標（position)を移動させてからインデックスの入れ替え
         //field[moveFrom.y, moveFrom.x].transform.position =
         //new Vector3(moveTo.x, field.GetLength(0) - moveTo.y, 0);
-        Vector3 moveToPosition = new Vector3(
-            moveTo.x-field.GetLength(1)/2, field.GetLength(0)/2 - moveTo.y, 0
-            );
-        field[moveFrom.y, moveFrom.x].GetComponent<Move>().MoveTo(moveToPosition);
-        field[moveTo.y, moveTo.x] = field[moveFrom.y, moveFrom.x];
-        field[moveFrom.y, moveFrom.x] = null;
+        if (tag != "Wall")
+        {
+            Vector3 moveToPosition = new Vector3(
+                moveTo.x - field.GetLength(1) / 2, field.GetLength(0) / 2 - moveTo.y, 0
+                );
+            field[moveFrom.y, moveFrom.x].GetComponent<Move>().MoveTo(moveToPosition);
+            field[moveTo.y, moveTo.x] = field[moveFrom.y, moveFrom.x];
+            field[moveFrom.y, moveFrom.x] = null;
+        }
         return true;
         
     }
@@ -341,7 +382,11 @@ public class GameManagerScript : MonoBehaviour
                 Destroy(field[y, x]);
             }
         }
+        actionStack.Clear();
         clearText.SetActive(false);
+        StartText.SetActive(false);
+        UIText.SetActive(false);
+        Title.SetActive(false);
         Start();
     }
     void Undo()

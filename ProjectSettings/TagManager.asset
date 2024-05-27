@@ -8,6 +8,10 @@ TagManager:
   - Goals
   - ClearText
   - Particle
+  - Wall
+  - Title
+  - TitleUI
+  - UI
   layers:
   - Default
   - TransparentFX
