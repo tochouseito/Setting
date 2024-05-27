@@ -9,6 +9,7 @@ MonoImporter:
   - goalsPrefab: {fileID: 2367475362187718917, guid: e376224524ac10f40b75a68b619fc2e8, type: 3}
   - clearText: {instanceID: 0}
   - particlePrefab: {fileID: 179375399296062662, guid: d7a92656346ad324d98157ab53b2e7ca, type: 3}
+  - wallPrefab: {fileID: 2104140988137557214, guid: 42610f312bf131d44812445a61cf1b43, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
